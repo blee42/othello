@@ -1,4 +1,5 @@
 from pprint import pprint
+from random import choice
 
 # Team Swag
 
@@ -80,11 +81,20 @@ class TeamSwag:
 	def evaluate(self, mine, their, board):
 		pass
 
-	def minimax(self, curr, mine, their, board):
+	def moves(self, mine, their, board):
+		options = []
 		for i in range(self.size):
 			for j in range(self.size):
-				if self.legal((i, j), mine, their, board):
-					return (i, j)
+				coord = (i, j)
+				if self.legal(coord, mine, their, board):
+					options.append(coord)
+		return options
+
+	def minimax(self, curr, mine, their, board):
+		moves = self.moves(mine, their, board)
+		if len(moves) == 0:
+			return (-1, -1)
+		return choice(moves)
 
 	def play_square(self, prev_row, prev_col, mine, their):
 		prev = (prev_row, prev_col)
