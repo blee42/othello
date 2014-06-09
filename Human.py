@@ -70,7 +70,6 @@ class Human:
 				distance = distance + 1
 				pos = self.add(pos, v)
 
-
 	def play_square(self, prev_row, prev_col, mine, their):
 		prev = (prev_row, prev_col)
 		if prev != (-1, -1):
