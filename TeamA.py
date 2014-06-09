@@ -107,6 +107,8 @@ class TeamA:
 		# return self.make_move(playerColor, oppColor)
 		nself = copy.deepcopy(self)
 		val, move = nself.make_better_move(playerColor, oppColor, 0, playerColor)
+		if move != (-1,-1):
+			self.place_piece(move[0], move[1], playerColor, oppColor)
 		return move
 
 #sets all tiles along a given direction (Dir) from a given starting point (col and row) for a given distance
