@@ -159,4 +159,6 @@ class TeamSwag:
 		move = self.minimax(mine, mine, their, self.board, self.max_depth)[1]
 		if move is None:
 			return (-1, -1)
+		else:
+			self._place_piece(move, mine, their, self.board)
 		return move
