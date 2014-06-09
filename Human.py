@@ -84,6 +84,6 @@ class Human:
 				raise SystemExit(0)
 			except ValueError:
 				pass
-		if not coord == (-1, -1)
-			self._place_piece(coord, mine, their, self.board)
+		if not coord == (-1, -1):
+			self._place_piece(coord, mine, their)
 		return coord
