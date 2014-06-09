@@ -177,6 +177,7 @@ class TeamSwag:
 				break
 			else:
 				move = trial
+			n = n + 1
 		if move != (-1, -1):
 			self._place_piece(move, mine, their, self.board)
 		return move

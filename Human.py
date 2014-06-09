@@ -78,8 +78,8 @@ class Human:
 		while not self.legal(coord, mine, their):
 			try:
 				coord = (int(raw_input('Row: ')) - 1, int(raw_input('Col: ')) - 1)
-				if coord[0] < 0 or coord[0] > self.size or coord[1] < 0 or coord[1] > self.size:
-					raise ValueError()
+				if coord[0] < 0 or coord[0] >= self.size or coord[1] < 0 or coord[1] >= self.size:
+					raise ValueError('Out of bounds')
 			except KeyboardInterrupt:
 				raise SystemExit(0)
 			except ValueError:
