@@ -1,3 +1,5 @@
+from __future__ import print_function
+import copy
 
 class TeamA:
 
@@ -102,7 +104,10 @@ class TeamA:
 			self.place_piece(row,col,oppColor,playerColor)
 		
 		# Determine best move and and return value to Matchmaker
-		return self.make_move(playerColor, oppColor)
+		# return self.make_move(playerColor, oppColor)
+		nself = copy.deepcopy(self)
+		val, move = nself.make_better_move(playerColor, oppColor, 0, playerColor)
+		return move
 
 #sets all tiles along a given direction (Dir) from a given starting point (col and row) for a given distance
 # (dist) to be a given value ( player )
@@ -142,3 +147,117 @@ class TeamA:
 									break
 					return (row,col)
 		return (-1,-1)
+
+	def make_better_move(nself, playerColor, oppColor, depth, maxPlayer):
+		if (depth > 5):
+			return nself.find_mobility(playerColor, oppColor), (-1,-1)
+
+		valList = []
+		
+		moveList = nself.find_legal(playerColor,oppColor)
+		if (len(moveList) == 0):
+			return nself.find_numSquares(playerColor, oppColor), (-1,-1)
+
+		# if maximizing player
+		if (playerColor == maxPlayer):
+			# raw_input('we are in max')
+			for move in moveList:
+				nself.set_square(move[0], move[1], playerColor, oppColor)
+				val, nextMove = nself.make_better_move(oppColor, playerColor, depth+1, maxPlayer)
+				valList.append(val)
+ 
+			val, index = get_max(valList)
+			return val, moveList[index]
+
+		# if minimizing player
+		else:
+			# raw_input('we are in min')
+			for move in moveList:
+				nself.set_square(move[0], move[1], playerColor, oppColor)
+				val, nextMove = nself.make_better_move(oppColor, playerColor, depth+1, maxPlayer)
+				valList.append(val)
+
+			val, index = get_min(valList)
+			return val, moveList[index]
+
+	def full_board(self):
+		for i in range(self.size):
+			for j in range(self.size):
+				if(self.board[i][j]==' '):
+					return False
+
+		return True
+
+	def find_legal(self,playerColor,oppColor):
+		spaces = []
+		for row in range(self.size):
+			for col in range(self.size):
+				if (self.islegal(row,col,playerColor,oppColor)):
+					move = (row, col)
+					spaces.append(move)
+		return spaces
+
+	def find_mobility(self,playerColor,oppColor):
+		legalList = self.find_legal(playerColor, oppColor)
+		return len(legalList)
+
+	def find_numSquares(self, playerColor, oppColor):
+		count = 0
+		for row in range(self.size):
+			for col in range(self.size):
+				if (self.get_square(row, col) == playerColor):
+					count += 1
+		return count
+
+	def set_square(self, row, col, playerColor, oppColor):
+		for Dir in self.directions:
+			#look across the length of the board to see if the neighboring squares are empty,
+			#held by the player, or held by the opponent
+			for i in range(self.size):
+				if  ((( row + i*Dir[0])<self.size)  and (( row + i*Dir[0])>=0 ) and (( col + i*Dir[1])>=0 ) and (( col + i*Dir[1])<self.size )):
+					#does the adjacent square in direction dir belong to the opponent?
+					if self.get_square(row+ i*Dir[0], col + i*Dir[1])!= oppColor and i==1 : # no
+						#no pieces will be flipped in this direction, so skip it
+						break
+					#yes the adjacent piece belonged to the opponent, now lets see if there are a chain
+					#of opponent pieces
+					if self.get_square(row+ i*Dir[0], col + i*Dir[1])==" " and i!=0 :
+						break
+
+					#with one of player's pieces at the other end
+					if self.get_square(row+ i*Dir[0], col + i*Dir[1])==playerColor and i!=0 and i!=1 :
+						#set a flag so we know that the move was legal
+						legal = True
+						self.flip_tiles(row, col, Dir, i, playerColor)
+						break
+
+def get_max(valList):
+	maxVal = max(valList)
+	index = valList.index(maxVal)
+	return maxVal, index
+
+def get_min(valList):
+	minVal = min(valList)
+	index = valList.index(minVal)
+	return minVal, index
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
