@@ -12,8 +12,8 @@ class TeamSwag:
 		self.board[3][4] = 'B'
 		self.board[3][3] = 'W'
 		self.board[4][3] = 'B'
-		# a list of unit vectors (row, col)
 		self.directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+		self.max_depth = 5
 
 	def copy(self, board):
 		return [list(row) for row in board]
@@ -100,7 +100,7 @@ class TeamSwag:
 					options.append(coord)
 		return options
 
-	def minimax(self, curr, mine, their, board, depth=5):
+	def minimax(self, curr, mine, their, board, depth, prune=None):
 		if depth == 0:
 			return self.evaluate(mine, their, board), None
 		
@@ -113,8 +113,17 @@ class TeamSwag:
 			for move in moves:
 				new = self.copy(board)
 				self._place_piece(move, mine, their, new)
-				val = self.minimax(their, mine, their, new, depth - 1)[0]
-				if val > best_val:
+
+				val = self.minimax(their, mine, their, new, depth - 1, best_val)[0]
+
+				if val is None:
+					continue
+
+				# Pruning
+				if prune is not None and val > prune:
+					return None, None
+
+				if best_val is None or val > best_val:
 					best_val = val
 					best_move = move
 			return best_val, best_move
@@ -127,8 +136,17 @@ class TeamSwag:
 			for move in moves:
 				new = self.copy(board)
 				self._place_piece(move, their, mine, new)
-				val = self.minimax(mine, mine, their, new, depth - 1)[0]
-				if worst_val == None or val < worst_val:
+
+				val = self.minimax(mine, mine, their, new, depth - 1, worst_val)[0]
+
+				if val is None:
+					continue
+
+				# Pruning
+				if prune is not None and val < prune:
+					return None, None
+
+				if worst_val is None or val < worst_val:
 					worst_val = val
 					worst_move = move
 			return worst_val, worst_move
@@ -137,9 +155,8 @@ class TeamSwag:
 		prev = (prev_row, prev_col)
 		if prev != (-1, -1):
 			self._place_piece(prev, their, mine, self.board)
-		pprint(self.board)
 
-		move = self.minimax(mine, mine, their, self.board)[1]
+		move = self.minimax(mine, mine, their, self.board, self.max_depth)[1]
 		if move is None:
 			return (-1, -1)
 		return move
