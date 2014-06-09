@@ -1,9 +1,9 @@
 from __future__ import print_function
-import sys, imp, copy
+import sys, imp
 import string, random, time
 
 COLORS = ['B','W']
-TURN_TIME_LIMIT = 1500		# seconds
+TURN_TIME_LIMIT = 20		# seconds
 CONSECUTIVE_PASS_LIMIT = 2
 PAUSE_BETWEEN_MOVES = False
 
@@ -194,7 +194,7 @@ def main():
 	while True:
 		# Pauses game between moves
 		if (PAUSE_BETWEEN_MOVES):	
-			raw_input("Paused before player %s. Hit enter." % COLORS[curPlayerID])
+			input("Paused before player %s. Hit enter." % COLORS[curPlayerID])
 				
 		# Clarify player colors
 		playerColor = COLORS[curPlayerID]
@@ -208,7 +208,6 @@ def main():
 		# Get player's move and calculate time taken to respond
 		startTime = time.time()
 		move = players[curPlayerID].play_square(prevMove[0], prevMove[1], playerColor, oppColor)
-		# move = playCopy.play_square(prevMove[0], prevMove[1], playerColor, oppColor)
 		stopTime = time.time()
 		
 		# End game if players are stuck in a loop of playing (-1,-1)
@@ -249,9 +248,6 @@ def main():
 		prevMove = move
 		consecutivePasses = 0
 		
-		# sync all boards?
-		players[curPlayerID].place_piece(move[0], move[1], playerColor, oppColor)
-
 		mm.PrintBoard()
 		print()
 		
