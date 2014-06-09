@@ -82,15 +82,64 @@ class TeamSwag:
 	# Evaluation function
 
 	def evaluate(self, mine, their, board):
+		# constants!
+		# k1 = 1
+		# k2 = 1
+		# k3 = 10
+
+		# piece_score = 0
+		# for i in range(self.size):
+		# 	for j in range(self.size):
+		# 		val = self.get((i, j), board)
+		# 		if val == mine:
+		# 			piece_score = piece_score + 1
+		# 		elif val == their:
+		# 			piece_score = piece_score - 1
+
+		# mobility_score = len(self.moves(mine, their, board))
+
+		# corner_score = 0
+		# for i in [(0,0), (0, self.size-1), (self.size-1, 0), (self.size-1, self.size-1)]:
+		# 	val = self.get(i, board)
+		# 	if val == mine:
+		# 		corner_score += 1
+		# 	elif val == their:
+		# 		corner_score -= 1
+		# return score + 128
+
+		return self.position_score(mine, their, board)
+
+	def position_score(self, mine, their, board):
 		score = 0
-		for i in range(self.size):
-			for j in range(self.size):
-				val = self.get((i, j), board)
-				if val == mine:
-					score = score + 1
-				elif val == their:
-					score = score - 1
-		return score + 128
+
+		score += self.increment_score(mine, their, board, 99, [(0, 0), (0, self.size-1), (self.size-1, 0), (self.size-1, self.size-1)])
+		score += self.increment_score(mine, their, board, -8, [(0, 1), (1, 0), (0, self.size-2), (1, self.size-1), (self.size-2, 0), (self.size-1, 1),
+			(self.size-2, self.size-1), (self.size-1, self.size-2)])
+		score += self.increment_score(mine, their, board, 8, [(0, 2), (2, 0), (0, self.size-3), (2, self.size-1), (self.size-3, 0), (self.size-1, 2),
+			(self.size-3, self.size-1), (self.size-1, self.size-3)])
+		score += self.increment_score(mine, their, board, 6, [(0, 3), (3, 0), (0, self.size-4), (3, self.size-1), (self.size-4, 0), (self.size-1, 3),
+			(self.size-4, self.size-1), (self.size-1, self.size-4)])
+		score += self.increment_score(mine, their, board, -24, [(1, 1), (1, self.size-2), (self.size-2, 1), (self.size-2, self.size-2)])
+		score += self.increment_score(mine, their, board, -4, [(2, 1), (1, 2), (1, self.size-3), (2, self.size-2), (self.size-3, 1), (self.size-2, 2),
+			(self.size-3, self.size-2), (self.size-2, self.size-3)])
+		score += self.increment_score(mine, their, board, -3, [(3, 1), (1, 3), (1, self.size-4), (3, self.size-2), (self.size-4, 1), (self.size-2, 3),
+			(self.size-4, self.size-2), (self.size-2, self.size-4)])
+		score += self.increment_score(mine, their, board, 7, [(2, 2), (2, self.size-3), (self.size-3, 2), (self.size-3, self.size-3)])
+		score += self.increment_score(mine, their, board, 4, [(2, 3), (3, 2), (3, self.size-3), (2, self.size-4), (self.size-3, 3), (self.size-4, 2),
+			(self.size-3, self.size-4), (self.size-4, self.size-3)])
+
+		return score
+
+	def increment_score(self, mine, their, board, points, spaces):
+		score = 0
+		for i in spaces:
+			val = self.get(i, board)
+			if val == mine:
+				score += points
+			elif val == their:
+				score -= points
+
+		return score
 
 	def moves(self, mine, their, board):
 		options = []
@@ -166,7 +215,7 @@ class TeamSwag:
 		if prev != (-1, -1):
 			self._place_piece(prev, their, mine, self.board)
 
-		timeout = time() + 14
+		timeout = time() + 1
 
 		move = (-1, -1)
 
