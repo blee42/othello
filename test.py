@@ -12,11 +12,14 @@ def color(text, code):
 
 def print_board(board):
 		# Print board
-		print '+' + '-' * 16 + '+'
+		print '   1 2 3 4 5 6 7 8'
+		print ' +' + '-' * 16 + '+'
+		n = 1
 		for row in board:
-			string = '|' + ''.join(map(lambda x: color('[]', OKGREEN) if x == 'W' else (color('[]', OKBLUE) if x =='B' else '  '), row)) + '|'
+			string = str(n) + '|' + ''.join(map(lambda x: color('[]', OKGREEN) if x == 'W' else (color('[]', OKBLUE) if x =='B' else '  '), row)) + '|'
 			print string
-		print '+' + '-' * 16 + '+'
+			n = n + 1
+		print ' +' + '-' * 16 + '+'
 
 x = TeamSwag()
 
