@@ -2,6 +2,16 @@ from pprint import pprint
 from random import choice
 from time import time
 
+HEADER = '\033[95m'
+OKBLUE = '\033[94m'
+OKGREEN = '\033[92m'
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
+
+def color(text, code):
+	return code + text + ENDC
+
 # Team Swag
 
 class TeamSwag:
@@ -15,6 +25,17 @@ class TeamSwag:
 		self.board[4][3] = 'B'
 		self.directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 		self.max_depth = 5
+
+	def print_board(self, board, depth):
+		# Print board
+		print '  ' * depth + '   1 2 3 4 5 6 7 8'
+		print '  ' * depth + ' +' + '-' * 16 + '-+'
+		n = 1
+		for row in board:
+			string = str(n) + '|' + ''.join(map(lambda x: color(' #', OKGREEN) if x == 'W' else (color(' O', OKBLUE) if x =='B' else '  '), row)) + ' |'
+			print '  ' * depth + string
+			n = n + 1
+		print '  ' * depth + ' +' + '-' * 16 + '-+'
 
 	def copy(self, board):
 		return [list(row) for row in board]
@@ -86,11 +107,20 @@ class TeamSwag:
 		for i in range(self.size):
 			for j in range(self.size):
 				val = self.get((i, j), board)
+				increment = 1
+				if i == 0:
+					increment = increment * 10
+				if i == 7:
+					increment = increment * 10
+				if j == 0:
+					increment = increment * 10
+				if j == 7:
+					increment = increment * 10
 				if val == mine:
-					score = score + 1
+					score = score + increment
 				elif val == their:
-					score = score - 1
-		return score + 128
+					score = score - increment
+		return score + 1024
 
 	def moves(self, mine, their, board):
 		options = []
@@ -127,7 +157,7 @@ class TeamSwag:
 					continue
 
 				# Pruning
-				if prune is not None and val > prune:
+				if prune is not None and val >= prune:
 					return -1, None
 
 				if best_val is None or val > best_val:
@@ -153,7 +183,7 @@ class TeamSwag:
 					continue
 
 				# Pruning
-				if prune is not None and val > prune:
+				if prune is not None and val <= prune:
 					return -1, None
 
 				if worst_val is None or val < worst_val:
@@ -166,18 +196,20 @@ class TeamSwag:
 		if prev != (-1, -1):
 			self._place_piece(prev, their, mine, self.board)
 
-		timeout = time() + 14
+		timeout = time() + 1
 
 		move = (-1, -1)
 
 		n = 1
-		while True:
-			trial = self.minimax(mine, mine, their, self.board, n, timeout)[1]
-			if trial is None:
+		while n < 64:
+			trial = self.minimax(mine, mine, their, self.board, n, timeout)
+			if trial[1] is None:
 				break
 			else:
-				move = trial
+				move = trial[1]
 			n = n + 1
+
+
 		if move != (-1, -1):
 			self._place_piece(move, mine, their, self.board)
 		return move
