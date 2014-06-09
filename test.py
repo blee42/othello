@@ -22,5 +22,10 @@ def print_board(board):
 		print ' +' + '-' * 16 + '+'
 
 x = TeamSwag()
+x.max_depth = 3
+
+print_board(x.board)
+
+x.play_square(-1, -1, 'W', 'B')
 
 print_board(x.board)

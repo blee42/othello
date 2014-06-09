@@ -1,5 +1,6 @@
 from pprint import pprint
 from random import choice
+from time import time
 
 # Team Swag
 
@@ -89,7 +90,7 @@ class TeamSwag:
 					score = score + 1
 				elif val == their:
 					score = score - 1
-		return score
+		return score + 128
 
 	def moves(self, mine, their, board):
 		options = []
@@ -100,51 +101,60 @@ class TeamSwag:
 					options.append(coord)
 		return options
 
-	def minimax(self, curr, mine, their, board, depth, prune=None):
+	def minimax(self, curr, mine, their, board, depth, timeout, prune=None):
+		if time() > timeout:
+			return None, None
+
 		if depth == 0:
-			return self.evaluate(mine, their, board), None
+			return self.evaluate(mine, their, board), (-1, -1)
 		
 		if curr == mine: # MAXIMIZE
 			moves = self.moves(mine, their, board)
 			if len(moves) == 0:
-				return self.evaluate(mine, their, board), None
+				return self.evaluate(mine, their, board), (-1, -1)
 			best_val = None
 			best_move = None
 			for move in moves:
 				new = self.copy(board)
 				self._place_piece(move, mine, their, new)
 
-				val = self.minimax(their, mine, their, new, depth - 1, best_val)[0]
+				val = self.minimax(their, mine, their, new, depth - 1, timeout, best_val)[0]
 
 				if val is None:
+					return None, None
+
+				if val == -1:
 					continue
 
 				# Pruning
 				if prune is not None and val > prune:
-					return None, None
+					return -1, None
 
 				if best_val is None or val > best_val:
 					best_val = val
 					best_move = move
 			return best_val, best_move
 		else: #MINIMIZE
-			moves = self.moves(mine, their, board)
+			moves = self.moves(their, mine, board)
 			if len(moves) == 0:
-				return self.evaluate(mine, their, board), None
+				return self.evaluate(mine, their, board), (-1, -1)
 			worst_val = None
 			worst_move = None
 			for move in moves:
 				new = self.copy(board)
 				self._place_piece(move, their, mine, new)
 
-				val = self.minimax(mine, mine, their, new, depth - 1, worst_val)[0]
+				val = self.minimax(mine, mine, their, new, depth - 1, timeout, worst_val)[0]
 
 				if val is None:
+					return None, None
+
+				if val == -1:
 					continue
 
 				# Pruning
-				if prune is not None and val < prune:
-					return None, None
+				if prune is not None and val > prune:
+					return -1, None
 
 				if worst_val is None or val < worst_val:
 					worst_val = val
@@ -156,9 +166,17 @@ class TeamSwag:
 		if prev != (-1, -1):
 			self._place_piece(prev, their, mine, self.board)
 
-		move = self.minimax(mine, mine, their, self.board, self.max_depth)[1]
-		if move is None:
-			return (-1, -1)
-		else:
+		timeout = time() + 14
+
+		move = (-1, -1)
+
+		n = 1
+		while True:
+			trial = self.minimax(mine, mine, their, self.board, n, timeout)[1]
+			if trial is None:
+				break
+			else:
+				move = trial
+		if move != (-1, -1):
 			self._place_piece(move, mine, their, self.board)
 		return move
