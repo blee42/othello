@@ -5,7 +5,7 @@ import string, random, time
 COLORS = ['B','W']
 TURN_TIME_LIMIT = 20		# seconds
 CONSECUTIVE_PASS_LIMIT = 2
-PAUSE_BETWEEN_MOVES = False
+PAUSE_BETWEEN_MOVES = True
 
 class Matchmaker:
 
@@ -193,8 +193,8 @@ def main():
    
 	while True:
 		# Pauses game between moves
-		if (PAUSE_BETWEEN_MOVES):	
-			input("Paused before player %s. Hit enter." % COLORS[curPlayerID])
+		if (PAUSE_BETWEEN_MOVES):
+			raw_input("Paused before player %s. Hit enter." % COLORS[curPlayerID])
 				
 		# Clarify player colors
 		playerColor = COLORS[curPlayerID]
@@ -236,6 +236,8 @@ def main():
 		# If player has returned an illegal move, player loses
 		elif (not mm.islegal(move[0], move[1], playerColor, oppColor)):
 			print("%s has entered an illegal move." % teamNames[curPlayerID])
+			print("%s (%s) tried to place a piece at (%d, %d) in %.1fs" % 
+				(teamNames[curPlayerID],playerColor, move[0]+1, move[1]+1,runTime))
 			print("%s (%s) is the winner." % (teamNames[1-curPlayerID], oppColor))
 			return
 		
