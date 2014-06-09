@@ -16,7 +16,7 @@ def print_board(board):
 		print ' +' + '-' * 16 + '+'
 		n = 1
 		for row in board:
-			string = str(n) + '|' + ''.join(map(lambda x: color('[]', OKGREEN) if x == 'W' else (color('[]', OKBLUE) if x =='B' else '  '), row)) + '|'
+			string = str(n) + '|' + ''.join(map(lambda x: color(' #', OKGREEN) if x == 'W' else (color(' O', OKBLUE) if x =='B' else '  '), row)) + '|'
 			print string
 			n = n + 1
 		print ' +' + '-' * 16 + '+'
