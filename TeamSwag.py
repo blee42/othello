@@ -84,7 +84,7 @@ class TeamSwag:
 		score = 0
 		for i in range(self.size):
 			for j in range(self.size):
-				val = self.get(coord, board)
+				val = self.get((i, j), board)
 				if val == mine:
 					score = score + 1
 				elif val == their:
@@ -102,28 +102,32 @@ class TeamSwag:
 
 	def minimax(self, curr, mine, their, board, depth=5):
 		if depth == 0:
-			return self.evaluate(mine, their, board), None:
+			return self.evaluate(mine, their, board), None
 		
 		if curr == mine: # MAXIMIZE
 			moves = self.moves(mine, their, board)
+			if len(moves) == 0:
+				return self.evaluate(mine, their, board), None
 			best_val = None
 			best_move = None
 			for move in moves:
 				new = self.copy(board)
 				self._place_piece(move, mine, their, new)
-				val = minimax(their, mine, their, new, depth - 1)[0]
+				val = self.minimax(their, mine, their, new, depth - 1)[0]
 				if val > best_val:
 					best_val = val
 					best_move = move
 			return best_val, best_move
 		else: #MINIMIZE
 			moves = self.moves(mine, their, board)
+			if len(moves) == 0:
+				return self.evaluate(mine, their, board), None
 			worst_val = None
 			worst_move = None
 			for move in moves:
 				new = self.copy(board)
-				self._place_piece(move, mine, their, new)
-				val = minimax(their, mine, their, new, depth - 1)[0]
+				self._place_piece(move, their, mine, new)
+				val = self.minimax(mine, mine, their, new, depth - 1)[0]
 				if worst_val == None or val < worst_val:
 					worst_val = val
 					worst_move = move
@@ -136,4 +140,6 @@ class TeamSwag:
 		pprint(self.board)
 
 		move = self.minimax(mine, mine, their, self.board)[1]
+		if move is None:
+			return (-1, -1)
 		return move
