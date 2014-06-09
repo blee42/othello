@@ -58,6 +58,8 @@ class TeamSwag:
 		for i in range(distance):
 			self.set(self.ray(coord, v, i + 1), mine, board)
 
+	# Alias for interfacing
+
 	def place_piece(self, row, col, mine, their):
 		self._place_piece((row, col), mine, their, self.board)
 
@@ -79,7 +81,15 @@ class TeamSwag:
 	# Evaluation function
 
 	def evaluate(self, mine, their, board):
-		pass
+		score = 0
+		for i in range(self.size):
+			for j in range(self.size):
+				val = self.get(coord, board)
+				if val == mine:
+					score = score + 1
+				elif val == their:
+					score = score - 1
+		return score
 
 	def moves(self, mine, their, board):
 		options = []
@@ -90,11 +100,34 @@ class TeamSwag:
 					options.append(coord)
 		return options
 
-	def minimax(self, curr, mine, their, board):
-		moves = self.moves(mine, their, board)
-		if len(moves) == 0:
-			return (-1, -1)
-		return choice(moves)
+	def minimax(self, curr, mine, their, board, depth=5):
+		if depth == 0:
+			return self.evaluate(mine, their, board), None:
+		
+		if curr == mine: # MAXIMIZE
+			moves = self.moves(mine, their, board)
+			best_val = None
+			best_move = None
+			for move in moves:
+				new = self.copy(board)
+				self._place_piece(move, mine, their, new)
+				val = minimax(their, mine, their, new, depth - 1)[0]
+				if val > best_val:
+					best_val = val
+					best_move = move
+			return best_val, best_move
+		else: #MINIMIZE
+			moves = self.moves(mine, their, board)
+			worst_val = None
+			worst_move = None
+			for move in moves:
+				new = self.copy(board)
+				self._place_piece(move, mine, their, new)
+				val = minimax(their, mine, their, new, depth - 1)[0]
+				if worst_val == None or val < worst_val:
+					worst_val = val
+					worst_move = move
+			return worst_val, worst_move
 
 	def play_square(self, prev_row, prev_col, mine, their):
 		prev = (prev_row, prev_col)
@@ -102,5 +135,5 @@ class TeamSwag:
 			self._place_piece(prev, their, mine, self.board)
 		pprint(self.board)
 
-		move = self.minimax(mine, mine, their, self.copy(self.board))
+		move = self.minimax(mine, mine, their, self.board)[1]
 		return move
