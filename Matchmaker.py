@@ -3,7 +3,7 @@ import sys, imp
 import string, random, time
 
 COLORS = ['B','W']
-TURN_TIME_LIMIT = 20		# seconds
+TURN_TIME_LIMIT = 15		# seconds
 CONSECUTIVE_PASS_LIMIT = 2
 PAUSE_BETWEEN_MOVES = False
 
