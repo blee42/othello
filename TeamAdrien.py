@@ -12,9 +12,9 @@ ENDC = '\033[0m'
 def color(text, code):
 	return code + text + ENDC
 
-# Team Britt
+# Team Swag
 
-class TeamBritt:
+class TeamAdrien:
 
 	def __init__(self):
 		self.board = [[' '] * 8 for i in range(8)]
@@ -102,76 +102,71 @@ class TeamBritt:
 
 	# Evaluation function
 
+	def count_stable(self, pos, color, v1, v2, board):
+		total = 1
+		a = self.add(pos, v1)
+		if self.on_board(a) and self.get(a, board) == color:
+			_a = self.sub(a, v2)
+			if (not self.on_board(_a)) or (self.get(_a, board) == color):
+				total = total + self.count_stable(a, color, v1, v2, board)
+		b = self.add(pos, v2)
+		if self.on_board(b) and self.get(b, board) == color:
+			_b = self.sub(b, v1)
+			if (not self.on_board(_b)) or (self.get(_b, board) == color):
+				total = total + self.count_stable(b, color, v1, v2, board)
+		return total
+
+	def stable(self, mine, their, board):
+		total = 0
+		corner = self.get((0, 0), board)
+		if corner != ' ':
+			count = self.count_stable((0, 0), corner, (1, 0), (0, 1), board)
+			if corner == mine:
+				total = total + count
+			else:
+				total = total - count
+		corner = self.get((0, 7), board)
+		if corner != ' ':
+			count = self.count_stable((0, 7), corner, (1, 0), (0, -1), board)
+			if corner == mine:
+				total = total + count
+			else:
+				total = total - count
+		corner = self.get((7, 0), board)
+		if corner != ' ':
+			count = self.count_stable((7, 0), corner, (-1, 0), (0, 1), board)
+			if corner == mine:
+				total = total + count
+			else:
+				total = total - count
+		corner = self.get((7, 7), board)
+		if corner != ' ':
+			count = self.count_stable((7, 7), corner, (-1, 0), (0, -1), board)
+			if corner == mine:
+				total = total + count
+			else:
+				total = total - count
+		return total
+
 	def evaluate(self, mine, their, board):
 		score = 0
 		for i in range(self.size):
 			for j in range(self.size):
 				val = self.get((i, j), board)
 				increment = 1
-
-				# corners
-				if i == 0 and j == 0:
-					increment = increment * 100
-					if mine == self.get((0,7), board) or mine == self.get((7,0), board):
-						increment = increment * 100
-					if mine == self.get((0,7), board) and mine == self.get((7,0), board):
-						increment = increment * 1000
-				if i == 7 and j == 7:
-					increment = increment * 100
-					if mine == self.get((0,7), board) or mine == self.get((7,0), board):
-						increment = increment * 100
-					if mine == self.get((0,7), board) and mine == self.get((7,0), board):
-						increment = increment * 1000
-				if j == 0 and i == 7:
-					increment = increment * 100
-					if mine == self.get((0,0), board) or mine == self.get((7,7), board):
-						increment = increment * 100
-					if mine == self.get((0,0), board) and mine == self.get((7,7), board):
-						increment = increment * 1000
-				if j == 7 and i == 0:
-					increment = increment * 100
-					if mine == self.get((0,0), board) or mine == self.get((7,7), board):
-						increment = increment * 100
-					if mine == self.get((0,0), board) and mine == self.get((7,7), board):
-						increment = increment * 1000
-
-				# edges
-				if i > 1 and i < 6 and j == 0:
+				if i == 0:
 					increment = increment * 10
-				if i > 1 and i < 6 and j == 7:
+				if i == 7:
 					increment = increment * 10
-				if j > 1 and j < 6 and i == 0:
+				if j == 0:
 					increment = increment * 10
-				if j > 1 and j < 6 and i == 7:
+				if j == 7:
 					increment = increment * 10
-
-				# near corners
-				if (i == 1 and j == 1) or (i == 1 and j == 0) or (i == 0 and j == 1):
-					if mine == self.get((0,0), board):
-						increment = increment * 100
-					else:
-						increment = increment * (1/2)
-				if (i == 6 and j == 6) or (i == 6 and j == 7) or (i == 7 and j == 6):
-					if mine == self.get((7,7), board):
-						increment = increment * 100
-					else:
-						increment = increment * (1/2)
-				if (i == 1 and j == 6) or (i == 1 and j == 7) or (i == 0 and j == 6):
-					if mine == self.get((0,7), board):
-						increment = increment * 100
-					else:
-						increment = increment * (1/2)
-				if (i == 6 and j == 1) or (i == 6 and j == 0) or (i == 7 and j == 1):
-					if mine == self.get((7,0), board):
-						increment = increment * 100
-					else:
-						increment = increment * (1/2)
-
 				if val == mine:
 					score = score + increment
 				elif val == their:
 					score = score - increment
-		return score + 1024
+		return score + 1024 + self.stable(mine, their, board * 5)
 
 	def moves(self, mine, their, board):
 		options = []
