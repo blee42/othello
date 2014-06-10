@@ -2,16 +2,6 @@ from pprint import pprint
 from random import choice
 from time import time
 
-HEADER = '\033[95m'
-OKBLUE = '\033[94m'
-OKGREEN = '\033[92m'
-WARNING = '\033[93m'
-FAIL = '\033[91m'
-ENDC = '\033[0m'
-
-def color(text, code):
-	return code + text + ENDC
-
 # Team Swag
 
 class TeamSwag:
@@ -25,17 +15,6 @@ class TeamSwag:
 		self.board[4][3] = 'B'
 		self.directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 		self.max_depth = 5
-
-	def print_board(self, board, depth):
-		# Print board
-		print '  ' * depth + '   1 2 3 4 5 6 7 8'
-		print '  ' * depth + ' +' + '-' * 16 + '-+'
-		n = 1
-		for row in board:
-			string = str(n) + '|' + ''.join(map(lambda x: color(' #', OKGREEN) if x == 'W' else (color(' O', OKBLUE) if x =='B' else '  '), row)) + ' |'
-			print '  ' * depth + string
-			n = n + 1
-		print '  ' * depth + ' +' + '-' * 16 + '-+'
 
 	def copy(self, board):
 		return [list(row) for row in board]
@@ -108,6 +87,7 @@ class TeamSwag:
 		k2 = 100
 		k3 = 2500
 		k4 = 50
+
 		b  = [[99, -8, 8, 6, 6, 8, -8, 99],
 		 [-8, --24, -4, -3, -3, -4, --24, -8],
 		 [8, -4, 7, 4, 4, 7, -4, 8],
@@ -124,22 +104,34 @@ class TeamSwag:
 		for i in range(len(b)):
 			for j in range(len(b[i])):
 				val = self.get((i, j), board)
-				increment = 1
-				if i == 0:
-					increment = increment * 10
-				if i == 7:
-					increment = increment * 10
-				if j == 0:
-					increment = increment * 10
-				if j == 7:
-					increment = increment * 10
 				if val == mine:
-
-					score = score + increment
+					pos_score += b[i][j]
+					my_pieces += 1
 				elif val == their:
-					score = score - increment
-		return score + 1024
+					pos_score -= b[i][j]
+					their_pieces = 0
 
+		if my_pieces > their_pieces:
+			disc_score = 100 * my_pieces / (my_pieces + their_pieces)
+		elif my_pieces != their_pieces:
+			disc_score = 100 * their_pieces / (my_pieces + their_pieces)
+		else:
+			disc_score = 0
+
+		if my_pieces + their_pieces > 40:
+			k1 = 700
+
+		move_score = len(self.moves(mine, their, board))
+
+		corner_score = 0
+		for i in [(0, 0), (0, self.size-1), (self.size-1, 0), (self.size-1, self.size-1)]:
+			val = self.get(i, board)
+			if val == mine:
+				corner_score += 1
+			elif val == their:
+				corner_score -= 1
+
+		return k1 * disc_score + k2 * move_score + k3 * corner_score + k4 * pos_score + 100000
 
 	def moves(self, mine, their, board):
 		options = []
