@@ -111,25 +111,25 @@ class TeamBritt:
 
 				# corners
 				if i == 0 and j == 0:
-					increment = increment * 100
+					increment = increment * 500
 					if mine == self.get((0,7), board) or mine == self.get((7,0), board):
 						increment = increment * 100
 					if mine == self.get((0,7), board) and mine == self.get((7,0), board):
 						increment = increment * 1000
 				if i == 7 and j == 7:
-					increment = increment * 100
+					increment = increment * 500
 					if mine == self.get((0,7), board) or mine == self.get((7,0), board):
 						increment = increment * 100
 					if mine == self.get((0,7), board) and mine == self.get((7,0), board):
 						increment = increment * 1000
 				if j == 0 and i == 7:
-					increment = increment * 100
+					increment = increment * 500
 					if mine == self.get((0,0), board) or mine == self.get((7,7), board):
 						increment = increment * 100
 					if mine == self.get((0,0), board) and mine == self.get((7,7), board):
 						increment = increment * 1000
 				if j == 7 and i == 0:
-					increment = increment * 100
+					increment = increment * 500
 					if mine == self.get((0,0), board) or mine == self.get((7,7), board):
 						increment = increment * 100
 					if mine == self.get((0,0), board) and mine == self.get((7,7), board):
