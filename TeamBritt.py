@@ -12,9 +12,9 @@ ENDC = '\033[0m'
 def color(text, code):
 	return code + text + ENDC
 
-# Team Britt
+# Team Swag
 
-class TeamBritt:
+class TeamSwag:
 
 	def __init__(self):
 		self.board = [[' '] * 8 for i in range(8)]
