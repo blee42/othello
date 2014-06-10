@@ -223,6 +223,4 @@ class TeamKevin:
 
 		if move != (-1, -1):
 			self._place_piece(move, mine, their, self.board)
-		print("Evaluation score: ", self.evaluate(mine, their, self.board))
-		print("Depth: ", n)
 		return move
