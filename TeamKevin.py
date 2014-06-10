@@ -84,7 +84,7 @@ class TeamKevin:
 	def evaluate(self, mine, their, board):
 		# constants!
 		k1 = 10
-		k2 = 100
+		k2 = 80
 		k3 = 2500
 		k4 = 50
 
