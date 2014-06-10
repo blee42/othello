@@ -85,17 +85,17 @@ class TeamSwag:
 		# constants!
 		k1 = 10
 		k2 = 100
-		k3 = 4000
+		k3 = 2500
 		k4 = 50
 
-		b  = [[99, -8, 8, 6, 6, 8, -8, 99],
-		 [-8, -24, -4, -3, -3, -4, -24, -8],
+		b  = [[99, -15, 8, 6, 6, 8, -15, 99],
+		 [-15, -36, -4, -3, -3, -4, -36, -15],
 		 [8, -4, 7, 4, 4, 7, -4, 8],
 		 [6, -3, 4, 0, 0, 4, -3, 6],
 		 [6, -3, 4, 0, 0, 4, -3, 6],
 		 [8, -4, 7, 4, 4, 7, -4, 8],
-		 [-8, -24, -4, -3, -3, -4, -24, -8],
-		 [99, -8, 8, 6, 6, 8, -8, 99]]
+		 [-15, -36, -4, -3, -3, -4, -36, -15],
+		 [99, -15, 8, 6, 6, 8, -15, 99]]
 
 		my_pieces = 0
 		their_pieces = 0
@@ -209,13 +209,15 @@ class TeamSwag:
 		move = (-1, -1)
 
 		n = 1
-		while True:
-			trial = self.minimax(mine, mine, their, self.board, n, timeout)[1]
-			if trial is None:
+		while n < 64:
+			trial = self.minimax(mine, mine, their, self.board, n, timeout)
+			if trial[1] is None:
 				break
 			else:
-				move = trial
+				move = trial[1]
 			n = n + 1
+
+
 		if move != (-1, -1):
 			self._place_piece(move, mine, their, self.board)
 		print("Evaluation score: ", self.evaluate(mine, their, self.board))

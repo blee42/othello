@@ -5,7 +5,7 @@ import string, random, time
 COLORS = ['B','W']
 TURN_TIME_LIMIT = 20		# seconds
 CONSECUTIVE_PASS_LIMIT = 2
-PAUSE_BETWEEN_MOVES = False
+PAUSE_BETWEEN_MOVES = True
 
 class Matchmaker:
 
