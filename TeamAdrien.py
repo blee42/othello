@@ -14,7 +14,7 @@ def color(text, code):
 
 # Team Swag
 
-class TeamSwagOld:
+class TeamSwag:
 
 	def __init__(self):
 		self.board = [[' '] * 8 for i in range(8)]
@@ -102,6 +102,52 @@ class TeamSwagOld:
 
 	# Evaluation function
 
+	def count_stable(self, pos, color, v1, v2, board):
+		total = 1
+		a = self.add(pos, v1)
+		if self.on_board(a) and self.get(a, board) == color:
+			_a = self.sub(a, v2)
+			if (not self.on_board(_a)) or (self.get(_a, board) == color):
+				total = total + self.count_stable(a, color, v1, v2, board)
+		b = self.add(pos, v2)
+		if self.on_board(b) and self.get(b, board) == color:
+			_b = self.sub(b, v1)
+			if (not self.on_board(_b)) or (self.get(_b, board) == color):
+				total = total + self.count_stable(b, color, v1, v2, board)
+		return total
+
+	def stable(self, mine, their, board):
+		total = 0
+		corner = self.get((0, 0), board)
+		if corner != ' ':
+			count = self.count_stable((0, 0), corner, (1, 0), (0, 1), board)
+			if corner == mine:
+				total = total + count
+			else:
+				total = total - count
+		corner = self.get((0, 7), board)
+		if corner != ' ':
+			count = self.count_stable((0, 7), corner, (1, 0), (0, -1), board)
+			if corner == mine:
+				total = total + count
+			else:
+				total = total - count
+		corner = self.get((7, 0), board)
+		if corner != ' ':
+			count = self.count_stable((7, 0), corner, (-1, 0), (0, 1), board)
+			if corner == mine:
+				total = total + count
+			else:
+				total = total - count
+		corner = self.get((7, 7), board)
+		if corner != ' ':
+			count = self.count_stable((7, 7), corner, (-1, 0), (0, -1), board)
+			if corner == mine:
+				total = total + count
+			else:
+				total = total - count
+		return total
+
 	def evaluate(self, mine, their, board):
 		score = 0
 		for i in range(self.size):
@@ -120,7 +166,7 @@ class TeamSwagOld:
 					score = score + increment
 				elif val == their:
 					score = score - increment
-		return score + 1024
+		return score + 1024 + self.stable(mine, their, board * 5)
 
 	def moves(self, mine, their, board):
 		options = []

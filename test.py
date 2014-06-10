@@ -24,8 +24,21 @@ def print_board(board):
 x = TeamSwag()
 x.max_depth = 3
 
+x.board[0][0] = 'B'
+x.board[0][1] = 'B'
+x.board[0][2] = 'B'
+x.board[1][2] = 'B'
+x.board[1][0] = 'B'
+x.board[1][1] = 'B'
+x.board[2][1] = 'B'
+
+x.board[7][0] = 'W'
+x.board[7][1] = 'W'
+x.board[7][2] = 'W'
+x.board[6][2] = 'W'
+x.board[6][0] = 'W'
+x.board[6][1] = 'W'
+
 print_board(x.board)
 
-x.play_square(-1, -1, 'W', 'B')
-
-print_board(x.board)
+print x.stable('B', 'W', x.board)
