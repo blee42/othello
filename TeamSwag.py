@@ -83,63 +83,52 @@ class TeamSwag:
 
 	def evaluate(self, mine, their, board):
 		# constants!
-		# k1 = 1
-		# k2 = 1
-		# k3 = 10
+		k1 = 10
+		k2 = 100
+		k3 = 4000
+		k4 = 50
 
-		# piece_score = 0
-		# for i in range(self.size):
-		# 	for j in range(self.size):
-		# 		val = self.get((i, j), board)
-		# 		if val == mine:
-		# 			piece_score = piece_score + 1
-		# 		elif val == their:
-		# 			piece_score = piece_score - 1
+		b  = [[99, -8, 8, 6, 6, 8, -8, 99],
+		 [-8, -24, -4, -3, -3, -4, -24, -8],
+		 [8, -4, 7, 4, 4, 7, -4, 8],
+		 [6, -3, 4, 0, 0, 4, -3, 6],
+		 [6, -3, 4, 0, 0, 4, -3, 6],
+		 [8, -4, 7, 4, 4, 7, -4, 8],
+		 [-8, -24, -4, -3, -3, -4, -24, -8],
+		 [99, -8, 8, 6, 6, 8, -8, 99]]
 
-		# mobility_score = len(self.moves(mine, their, board))
+		my_pieces = 0
+		their_pieces = 0
 
-		# corner_score = 0
-		# for i in [(0,0), (0, self.size-1), (self.size-1, 0), (self.size-1, self.size-1)]:
-		# 	val = self.get(i, board)
-		# 	if val == mine:
-		# 		corner_score += 1
-		# 	elif val == their:
-		# 		corner_score -= 1
-		# return score + 128
+		pos_score = 0
+		for i in range(len(b)):
+			for j in range(len(b[i])):
+				val = self.get((i, j), board)
+				if val == mine:
+					pos_score += b[i][j]
+					my_pieces += 1
+				elif val == their:
+					pos_score -= b[i][j]
+					their_pieces = 0
 
-		return self.position_score(mine, their, board)
+		if my_pieces > their_pieces:
+			disc_score = 100 * my_pieces / (my_pieces + their_pieces)
+		elif my_pieces != their_pieces:
+			disc_score = 100 * their_pieces / (my_pieces + their_pieces)
+		else:
+			disc_score = 0
 
-	def position_score(self, mine, their, board):
-		score = 0
+		move_score = len(self.moves(mine, their, board))
 
-		score += self.increment_score(mine, their, board, 99, [(0, 0), (0, self.size-1), (self.size-1, 0), (self.size-1, self.size-1)])
-		score += self.increment_score(mine, their, board, -8, [(0, 1), (1, 0), (0, self.size-2), (1, self.size-1), (self.size-2, 0), (self.size-1, 1),
-			(self.size-2, self.size-1), (self.size-1, self.size-2)])
-		score += self.increment_score(mine, their, board, 8, [(0, 2), (2, 0), (0, self.size-3), (2, self.size-1), (self.size-3, 0), (self.size-1, 2),
-			(self.size-3, self.size-1), (self.size-1, self.size-3)])
-		score += self.increment_score(mine, their, board, 6, [(0, 3), (3, 0), (0, self.size-4), (3, self.size-1), (self.size-4, 0), (self.size-1, 3),
-			(self.size-4, self.size-1), (self.size-1, self.size-4)])
-		score += self.increment_score(mine, their, board, -24, [(1, 1), (1, self.size-2), (self.size-2, 1), (self.size-2, self.size-2)])
-		score += self.increment_score(mine, their, board, -4, [(2, 1), (1, 2), (1, self.size-3), (2, self.size-2), (self.size-3, 1), (self.size-2, 2),
-			(self.size-3, self.size-2), (self.size-2, self.size-3)])
-		score += self.increment_score(mine, their, board, -3, [(3, 1), (1, 3), (1, self.size-4), (3, self.size-2), (self.size-4, 1), (self.size-2, 3),
-			(self.size-4, self.size-2), (self.size-2, self.size-4)])
-		score += self.increment_score(mine, their, board, 7, [(2, 2), (2, self.size-3), (self.size-3, 2), (self.size-3, self.size-3)])
-		score += self.increment_score(mine, their, board, 4, [(2, 3), (3, 2), (3, self.size-3), (2, self.size-4), (self.size-3, 3), (self.size-4, 2),
-			(self.size-3, self.size-4), (self.size-4, self.size-3)])
-
-		return score
-
-	def increment_score(self, mine, their, board, points, spaces):
-		score = 0
-		for i in spaces:
+		corner_score = 0
+		for i in [(0, 0), (0, self.size-1), (self.size-1, 0), (self.size-1, self.size-1)]:
 			val = self.get(i, board)
 			if val == mine:
-				score += points
+				corner_score += 1
 			elif val == their:
-				score -= points
+				corner_score -= 1
 
-		return score
+		return k1 * disc_score + k2 * move_score + k3 * corner_score + k4 * pos_score + 100000
 
 	def moves(self, mine, their, board):
 		options = []
@@ -229,4 +218,6 @@ class TeamSwag:
 			n = n + 1
 		if move != (-1, -1):
 			self._place_piece(move, mine, their, self.board)
+		print("Evaluation score: ", self.evaluate(mine, their, self.board))
+		print("Depth: ", n)
 		return move
