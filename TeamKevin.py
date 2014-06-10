@@ -207,7 +207,7 @@ class TeamKevin:
 		if prev != (-1, -1):
 			self._place_piece(prev, their, mine, self.board)
 
-		timeout = time() + 1
+		timeout = time() + 14
 
 		move = (-1, -1)
 

@@ -14,7 +14,7 @@ def color(text, code):
 
 # Team Swag
 
-class TeamSwag:
+class TeamAdrien:
 
 	def __init__(self):
 		self.board = [[' '] * 8 for i in range(8)]
